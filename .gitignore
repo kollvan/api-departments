@@ -1,0 +1,14 @@
+.pylintrc
+__pycache__/
+.env
+../.idea
+superuser
+db.sqlite3
+media/
+TODO.txt
+fixtures/
+.dockerignore
+/db.json
+.coverage
+htmlcov/
+cache/
