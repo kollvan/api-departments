@@ -3,7 +3,7 @@ from django.db import models
 
 # Create your models here.
 class Department(models.Model):
-    name = models.CharField(max_length=200, null=False, blank=False)
+    name = models.CharField(max_length=200, null=False, blank=True)
     parent_id = models.ForeignKey('self', on_delete=models.CASCADE,  null=True, default=None)
     created_at = models.DateTimeField(auto_now_add=True)
 

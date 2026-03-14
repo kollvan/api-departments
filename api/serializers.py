@@ -1,17 +1,18 @@
 from rest_framework import serializers
+from rest_framework.generics import get_object_or_404
 
 from departments.models import Department, Employee
 
 
-class DynamicRecursionSerializer(serializers.ModelSerializer):
+class DynamicSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
 
 
 def create_dynamic_serializer(**kwargs):
     for key, value in kwargs.items():
-        setattr(DynamicRecursionSerializer.Meta, key, value)
-    return DynamicRecursionSerializer
+        setattr(DynamicSerializer.Meta, key, value)
+    return DynamicSerializer
 
 
 class DepartmentSerializer(serializers.ModelSerializer):
@@ -29,5 +30,5 @@ class EmployeeSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         department_id = self.context['view'].kwargs.get('pk', None)
-        validated_data['department_id'] = Department.objects.get(pk=department_id)
+        validated_data['department_id'] = get_object_or_404(Department, pk=department_id)
         return super().create(validated_data)
