@@ -12,3 +12,4 @@ fixtures/
 .coverage
 htmlcov/
 cache/
+.venv

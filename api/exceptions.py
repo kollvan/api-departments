@@ -1,0 +1,1 @@
+class IncorrectReassignException(Exception): pass
