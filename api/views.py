@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from api.exceptions import IncorrectReassignException
 from api.mixins import CustomSerializerMixin
 from api.serializers import DepartmentSerializer, EmployeeSerializer
+from departments.exceptions import CycleValidationError
 from departments.models import Department, Employee
 
 
@@ -14,6 +15,11 @@ from departments.models import Department, Employee
 class DepartmentsViewSet(CustomSerializerMixin, viewsets.ModelViewSet):
     queryset = Department.objects.all()
     serializer_class = DepartmentSerializer
+
+    def handle_exception(self, exc):
+        if isinstance(exc, CycleValidationError):
+            return Response({'detail': exc.args[0]}, status=409)
+        return super().handle_exception(exc)
 
     def retrieve(self, request: Request, *args, **kwargs):
         response_data = {}
@@ -42,7 +48,7 @@ class DepartmentsViewSet(CustomSerializerMixin, viewsets.ModelViewSet):
                         'detail': e.args[0]},
                     status=400
                 )
-        else:
+        elif mode != 'cascade':
             return Response(
                 data={'detail': 'Incorrect value for the mode parameter.'},
                 status=400
@@ -54,8 +60,7 @@ class DepartmentsViewSet(CustomSerializerMixin, viewsets.ModelViewSet):
         if department_id is not None and department_id.isdigit():
             pk = kwargs.get('pk', None)
             department = get_object_or_404(Department, pk=department_id)
-            Employee.objects.filter(department_id=pk).update(department_id=department)
-            return super().destroy(request, *args, **kwargs)
+            Employee.objects.filter(department_id=pk).update(department_id=department.pk)
         else:
             raise IncorrectReassignException('Required Integer parameter: reassign_to_department_id.')
 
