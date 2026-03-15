@@ -1,6 +1,7 @@
 .pylintrc
 __pycache__/
 .env
+.idea
 ../.idea
 superuser
 db.sqlite3
