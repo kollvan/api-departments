@@ -3,7 +3,8 @@
 api-departments - api интерфейс для модификации, удаления и добавления записей.
 
 Пример испльзования api в postmen.<br>
-![example](./assets/example.jpg)
+![example](https://github.com/kollvan/api-departments/blob/master/assets/example.png?raw=true)
+
 ## Содержание
 ---
 - [Технологии](#-технологии)
