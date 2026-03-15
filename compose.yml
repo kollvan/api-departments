@@ -1,0 +1,50 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: psgr
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - bcnet
+    healthcheck:
+      test: ["CMD", "pg_isready", "-h", "localhost", '-U', '${DB_USER}', '-d', '${DB_NAME}']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  api:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: api_site
+    links:
+      - "postgres:psdb"
+    command: >
+      sh -c "
+        python manage.py migrate && 
+        gunicorn -c gunicorn.py api_departments.wsgi
+      "
+    volumes:
+      - .:/app/site/api_app
+    container_name: api-app-container
+    ports:
+      - "8000:8000"
+    networks:
+      - bcnet
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - .env
+
+networks:
+  bcnet:
+    driver: bridge
+
+volumes:
+  postgres_data:

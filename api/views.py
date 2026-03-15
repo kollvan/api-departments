@@ -16,7 +16,7 @@ class DepartmentsViewSet(CustomSerializerMixin, viewsets.ModelViewSet):
     queryset = Department.objects.all()
     serializer_class = DepartmentSerializer
 
-    def handle_exception(self, exc):
+    def handle_exception(self, exc: Exception):
         if isinstance(exc, CycleValidationError):
             return Response({'detail': exc.args[0]}, status=409)
         return super().handle_exception(exc)
